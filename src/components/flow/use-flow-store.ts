@@ -1,77 +1,93 @@
-import { useState, useEffect, useCallback } from "react";
-import type { Thought } from "./types";
+import { useCallback, useEffect, useState } from 'react'
+import type { Thought } from './types'
+import {
+  generateThoughtId,
+  getThoughtsCollection,
+} from '@/lib/thoughts-collection'
 
-const STORAGE_KEY = "flow-thoughts";
-const ONBOARDING_KEY = "flow-onboarding-complete";
-const THEME_KEY = "flow-theme";
-
-function generateId() {
-  return Math.random().toString(36).substring(2, 15);
-}
+const ONBOARDING_KEY = 'flow-onboarding-complete'
+const THEME_KEY = 'flow-theme'
 
 export function useFlowStore() {
-  const [thoughts, setThoughts] = useState<Thought[]>([]);
-  const [isOnboarding, setIsOnboarding] = useState(true);
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const [isBlurred, setIsBlurred] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+  const [thoughts, setThoughts] = useState<Array<Thought>>([])
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [isOnboarding, setIsOnboarding] = useState(true)
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  const [isBlurred, setIsBlurred] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentSearchIndex, setCurrentSearchIndex] = useState(0)
 
-  // Load from localStorage on mount
+  // Subscribe to thoughts collection on client only
   useEffect(() => {
-    const savedThoughts = localStorage.getItem(STORAGE_KEY);
-    const savedOnboarding = localStorage.getItem(ONBOARDING_KEY);
-    const savedTheme = localStorage.getItem(THEME_KEY) as "light" | "dark" | null;
+    const collection = getThoughtsCollection()
 
-    if (savedThoughts) {
-      setThoughts(JSON.parse(savedThoughts));
+    // Helper to get sorted thoughts
+    const getSortedThoughts = () => {
+      const all = collection.toArray
+      return all.sort((a, b) => b.createdAt - a.createdAt)
     }
-    if (savedOnboarding === "true") {
-      setIsOnboarding(false);
+
+    // Subscribe to changes with includeInitialState to get data once loaded
+    const subscription = collection.subscribeChanges(
+      () => {
+        setThoughts(getSortedThoughts())
+        setIsLoaded(true)
+      },
+      { includeInitialState: true }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    const savedOnboarding = localStorage.getItem(ONBOARDING_KEY)
+    const savedTheme = localStorage.getItem(THEME_KEY) as
+      | 'light'
+      | 'dark'
+      | null
+
+    if (savedOnboarding === 'true') {
+      setIsOnboarding(false)
     }
     if (savedTheme) {
-      setTheme(savedTheme);
+      setTheme(savedTheme)
     }
-  }, []);
+  }, [])
 
   // Apply theme to document
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem(THEME_KEY, theme);
-  }, [theme]);
-
-  // Save thoughts to localStorage
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(thoughts));
-  }, [thoughts]);
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    localStorage.setItem(THEME_KEY, theme)
+  }, [theme])
 
   const addThought = useCallback((content: string) => {
-    if (!content.trim()) return;
+    if (!content.trim()) return
     const newThought: Thought = {
-      id: generateId(),
+      id: generateThoughtId(),
       content: content.trim(),
       createdAt: Date.now(),
       updatedAt: Date.now(),
-    };
-    setThoughts((prev) => [newThought, ...prev]);
-  }, []);
+    }
+    getThoughtsCollection().insert(newThought)
+  }, [])
 
   const updateThought = useCallback((id: string, content: string) => {
-    setThoughts((prev) =>
-      prev.map((t) =>
-        t.id === id ? { ...t, content, updatedAt: Date.now() } : t
-      )
-    );
-  }, []);
+    getThoughtsCollection().update(id, (draft) => {
+      draft.content = content
+      draft.updatedAt = Date.now()
+    })
+  }, [])
 
   const deleteThought = useCallback((id: string) => {
-    setThoughts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+    getThoughtsCollection().delete(id)
+  }, [])
 
   const clearThoughts = useCallback(() => {
-    setThoughts([]);
-  }, []);
+    const collection = getThoughtsCollection()
+    thoughts.forEach((t) => collection.delete(t.id))
+  }, [thoughts])
 
   const completeOnboarding = useCallback(() => {
     setIsOnboarding(false);

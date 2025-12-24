@@ -29,11 +29,18 @@ This is a React 19 application using TanStack Start (full-stack React framework)
 
 ### Flow Feature
 The core feature is a thought-capture writing app. Key files in `src/components/flow/`:
-- `use-flow-store.ts` - React hook managing all state with localStorage persistence
+- `use-flow-store.ts` - React hook managing all state
 - `flow.tsx` - Main component orchestrating the UI
 - `types.ts` - `Thought` interface definition
 
-State is managed via the `useFlowStore` hook which handles thoughts CRUD, theme, search, and onboarding. Data persists to localStorage with keys prefixed `flow-`.
+State is managed via the `useFlowStore` hook which handles thoughts CRUD, theme, search, and onboarding.
+
+### Data Persistence
+- **Thoughts**: Persisted via TanStack DB (`@tanstack/react-db`) using `LocalStorageCollection`
+  - Collection defined in `src/lib/thoughts-collection.ts`
+  - Storage key: `flow-thoughts-db`
+  - Auto-migrates from legacy `flow-thoughts` localStorage format
+- **Preferences**: Theme and onboarding state use plain localStorage (`flow-theme`, `flow-onboarding-complete`)
 
 ## Code Style
 - No semicolons, single quotes, trailing commas (Prettier config)

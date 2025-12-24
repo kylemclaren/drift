@@ -5,7 +5,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
 } from "@/components/ui/context-menu";
-import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import { Kbd } from "@/components/ui/kbd";
 import { toast } from "sonner";
 import type { Thought } from "./types";
 
@@ -200,10 +200,17 @@ export function ThoughtItem({
       <ContextMenuContent>
         <ContextMenuItem onClick={handleCopy}>
           Copy
-          <KbdGroup className="ml-auto">
-            <Kbd>⌘</Kbd>
-            <Kbd>C</Kbd>
-          </KbdGroup>
+          <Kbd className="ml-auto">⌘ C</Kbd>
+        </ContextMenuItem>
+        <ContextMenuItem
+          onClick={() => {
+            onDelete(thought.id)
+            toast.success("Thought deleted")
+          }}
+          variant="destructive"
+        >
+          Delete
+          <Kbd className="ml-auto">⌫</Kbd>
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

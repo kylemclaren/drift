@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { GithubIcon, Menu02Icon } from "@hugeicons/core-free-icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,9 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Kbd, KbdGroup } from "@/components/ui/kbd";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Menu02Icon, GithubIcon } from "@hugeicons/core-free-icons";
+import { Kbd } from "@/components/ui/kbd";
 
 interface FlowHeaderProps {
   onToggleTheme: () => void;
@@ -24,15 +23,11 @@ export function FlowHeader({
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-end p-6">
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-foreground hover:bg-transparent"
-            aria-label="Actions"
-          >
-            <HugeiconsIcon icon={Menu02Icon} size={20} strokeWidth={2} />
-          </Button>
+        <DropdownMenuTrigger
+          className="focus-visible:border-ring focus-visible:ring-ring/50 rounded-md text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 size-9 inline-flex items-center justify-center outline-none focus-visible:ring-[3px]"
+          aria-label="Actions"
+        >
+          <HugeiconsIcon icon={Menu02Icon} size={20} strokeWidth={2} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuItem onClick={onToggleTheme}>
@@ -41,10 +36,7 @@ export function FlowHeader({
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onToggleSearch}>
             Search Thoughts
-            <KbdGroup className="ml-auto">
-              <Kbd>⌘</Kbd>
-              <Kbd>F</Kbd>
-            </KbdGroup>
+            <Kbd className="ml-auto">⌘ F</Kbd>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onClearThoughts}>
             Clear Thoughts
