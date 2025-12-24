@@ -15,7 +15,11 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Flow — Clear your mind through expressive writing',
+      },
+      {
+        name: 'description',
+        content: 'Clear your mind through raw, unfiltered writing. Thoughts fade into the background to make space for new ones.',
       },
     ],
     links: [
