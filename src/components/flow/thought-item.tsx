@@ -6,6 +6,24 @@ interface ThoughtItemProps {
   onUpdate: (id: string, content: string) => void;
   onDelete: (id: string) => void;
   isHighlighted?: boolean;
+  searchQuery?: string;
+}
+
+function highlightMatches(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text
+
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  const parts = text.split(regex)
+
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <mark key={i} className="bg-yellow-400/50 dark:bg-yellow-500/40 text-inherit rounded-sm px-0.5">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  )
 }
 
 function getRelativeTime(timestamp: number): string {
@@ -50,6 +68,7 @@ export function ThoughtItem({
   onUpdate,
   onDelete,
   isHighlighted,
+  searchQuery = '',
 }: ThoughtItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -118,6 +137,20 @@ export function ThoughtItem({
         transition: showClear ? 'opacity 0s' : 'opacity 1s ease-out',
       }}
     >
+      {searchQuery && !isEditing && (
+        <div
+          onClick={() => canEdit && textareaRef.current?.focus()}
+          style={{
+            filter: showClear ? 'blur(0px)' : `blur(${blurAmount}px)`,
+            transition: showClear ? 'filter 0s' : 'filter 1s ease-out',
+          }}
+          className={`w-full text-foreground text-base leading-relaxed whitespace-pre-wrap ${
+            isHighlighted ? "bg-accent/20 -mx-2 px-2 rounded" : ""
+          } ${canEdit ? "cursor-text" : "cursor-default"}`}
+        >
+          {highlightMatches(thought.content, searchQuery)}
+        </div>
+      )}
       <textarea
         ref={textareaRef}
         value={value}
@@ -133,7 +166,7 @@ export function ThoughtItem({
         }}
         className={`w-full bg-transparent border-none outline-none resize-none text-foreground placeholder:text-muted-foreground text-base leading-relaxed focus:ring-0 ${
           isHighlighted ? "bg-accent/20 -mx-2 px-2 rounded" : ""
-        } ${!canEdit ? "cursor-default" : ""}`}
+        } ${!canEdit ? "cursor-default" : ""} ${searchQuery && !isEditing ? "sr-only" : ""}`}
         rows={1}
       />
       {relativeTime && (

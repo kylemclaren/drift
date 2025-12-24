@@ -99,6 +99,7 @@ export function Flow() {
                     onUpdate={updateThought}
                     onDelete={deleteThought}
                     isHighlighted={thought.id === highlightedThoughtId}
+                    searchQuery={searchQuery}
                   />
                 ))}
               </div>

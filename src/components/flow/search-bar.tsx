@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowUp01Icon,
@@ -96,6 +97,7 @@ export function SearchBar({
         >
           <HugeiconsIcon icon={Cancel01Icon} size={16} strokeWidth={2} />
         </Button>
+        <Kbd className="ml-1">Esc</Kbd>
       </div>
     </div>
   );

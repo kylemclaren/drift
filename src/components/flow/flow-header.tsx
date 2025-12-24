@@ -3,9 +3,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Menu02Icon } from "@hugeicons/core-free-icons";
 
@@ -33,14 +33,17 @@ export function FlowHeader({
             <HugeiconsIcon icon={Menu02Icon} size={20} strokeWidth={2} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuItem onClick={onToggleTheme}>
             Toggle Theme
-            <DropdownMenuShortcut>T</DropdownMenuShortcut>
+            <Kbd className="ml-auto">T</Kbd>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onToggleSearch}>
             Search Thoughts
-            <DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
+            <KbdGroup className="ml-auto">
+              <Kbd>⌘</Kbd>
+              <Kbd>F</Kbd>
+            </KbdGroup>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onClearThoughts}>
             Clear Thoughts
