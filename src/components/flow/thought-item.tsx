@@ -1,4 +1,12 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+} from "@/components/ui/context-menu";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import { toast } from "sonner";
 import type { Thought } from "./types";
 
 interface ThoughtItemProps {
@@ -127,59 +135,77 @@ export function ThoughtItem({
 
   const showClear = isHovered || isEditing || isHighlighted;
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(thought.content);
+    toast.success("Copied to clipboard");
+  };
+
   return (
-    <div
-      className="group py-2"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        opacity: showClear ? 1 : opacity,
-        transition: showClear ? 'opacity 0s' : 'opacity 1s ease-out',
-      }}
-    >
-      {searchQuery && !isEditing && (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
         <div
-          onClick={() => canEdit && textareaRef.current?.focus()}
+          className="group py-2"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           style={{
-            filter: showClear ? 'blur(0px)' : `blur(${blurAmount}px)`,
-            transition: showClear ? 'filter 0s' : 'filter 1s ease-out',
+            opacity: showClear ? 1 : opacity,
+            transition: showClear ? 'opacity 0s' : 'opacity 1s ease-out',
           }}
-          className={`w-full text-foreground text-base leading-relaxed whitespace-pre-wrap ${
-            isHighlighted ? "bg-accent/20 -mx-2 px-2 rounded" : ""
-          } ${canEdit ? "cursor-text" : "cursor-default"}`}
         >
-          {highlightMatches(thought.content, searchQuery)}
+          {searchQuery && !isEditing && (
+            <div
+              onClick={() => canEdit && textareaRef.current?.focus()}
+              style={{
+                filter: showClear ? 'blur(0px)' : `blur(${blurAmount}px)`,
+                transition: showClear ? 'filter 0s' : 'filter 1s ease-out',
+              }}
+              className={`w-full text-foreground text-base leading-relaxed whitespace-pre-wrap ${
+                isHighlighted ? "bg-accent/20 -mx-2 px-2 rounded" : ""
+              } ${canEdit ? "cursor-text" : "cursor-default"}`}
+            >
+              {highlightMatches(thought.content, searchQuery)}
+            </div>
+          )}
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            readOnly={!canEdit}
+            placeholder="Erase with Backspace ⌫"
+            style={{
+              filter: showClear ? 'blur(0px)' : `blur(${blurAmount}px)`,
+              transition: showClear ? 'filter 0s' : 'filter 1s ease-out',
+            }}
+            className={`w-full bg-transparent border-none outline-none resize-none text-foreground placeholder:text-muted-foreground text-base leading-relaxed focus:ring-0 ${
+              isHighlighted ? "bg-accent/20 -mx-2 px-2 rounded" : ""
+            } ${!canEdit ? "cursor-default" : ""} ${searchQuery && !isEditing ? "sr-only" : ""}`}
+            rows={1}
+          />
+          {relativeTime && (
+            <span
+              className="text-xs text-muted-foreground mt-1 block"
+              style={{
+                filter: showClear ? 'blur(0px)' : `blur(${blurAmount * 0.5}px)`,
+                transition: showClear ? 'filter 0s' : 'filter 1s ease-out',
+              }}
+            >
+              {relativeTime}
+            </span>
+          )}
         </div>
-      )}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        readOnly={!canEdit}
-        placeholder="Erase with Backspace ⌫"
-        style={{
-          filter: showClear ? 'blur(0px)' : `blur(${blurAmount}px)`,
-          transition: showClear ? 'filter 0s' : 'filter 1s ease-out',
-        }}
-        className={`w-full bg-transparent border-none outline-none resize-none text-foreground placeholder:text-muted-foreground text-base leading-relaxed focus:ring-0 ${
-          isHighlighted ? "bg-accent/20 -mx-2 px-2 rounded" : ""
-        } ${!canEdit ? "cursor-default" : ""} ${searchQuery && !isEditing ? "sr-only" : ""}`}
-        rows={1}
-      />
-      {relativeTime && (
-        <span
-          className="text-xs text-muted-foreground mt-1 block"
-          style={{
-            filter: showClear ? 'blur(0px)' : `blur(${blurAmount * 0.5}px)`,
-            transition: showClear ? 'filter 0s' : 'filter 1s ease-out',
-          }}
-        >
-          {relativeTime}
-        </span>
-      )}
-    </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onClick={handleCopy}>
+          Copy
+          <KbdGroup className="ml-auto">
+            <Kbd>⌘</Kbd>
+            <Kbd>C</Kbd>
+          </KbdGroup>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

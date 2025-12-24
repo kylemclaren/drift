@@ -3,11 +3,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Menu02Icon } from "@hugeicons/core-free-icons";
+import { Menu02Icon, GithubIcon } from "@hugeicons/core-free-icons";
 
 interface FlowHeaderProps {
   onToggleTheme: () => void;
@@ -47,6 +48,18 @@ export function FlowHeader({
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onClearThoughts}>
             Clear Thoughts
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <a
+              href="https://github.com/kylemclaren/drift"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <HugeiconsIcon icon={GithubIcon} size={16} strokeWidth={2} />
+              GitHub
+            </a>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

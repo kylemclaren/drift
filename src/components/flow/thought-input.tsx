@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
+import { MicrophoneWaveform } from "@/components/ui/waveform";
+import ShinyText from "@/components/ShinyText";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Mic01Icon, StopIcon } from "@hugeicons/core-free-icons";
 
@@ -139,6 +141,21 @@ export function ThoughtInput({ onSubmit }: ThoughtInputProps) {
           />
         </Button>
       </div>
+      {isListening && (
+        <div className="mt-3 mb-1 flex items-center gap-3">
+          <MicrophoneWaveform
+            active={isListening}
+            height={40}
+            barWidth={3}
+            barGap={2}
+            barRadius={2}
+            sensitivity={1.5}
+            fadeEdges={true}
+            className="flex-1"
+          />
+          <ShinyText text="Listening" speed={3} className="text-sm" />
+        </div>
+      )}
       <div className="flex items-center justify-between mt-2">
         <div className="h-px bg-border flex-1" />
         {value.trim() && (
