@@ -8,7 +8,7 @@ interface OnboardingProps {
 }
 
 const onboardingMessages = [
-  { content: "Welcome to Flow.", delay: 0 },
+  { content: "Welcome to Drift.", delay: 0 },
   { content: "Clear your mind through raw, unfiltered writing.", delay: 2 },
   { content: "Thoughts will fade into the background to make space for new ones.", delay: 4 },
   { content: "Feel free to alter your thoughts within 5 minutes, after which you can leave them to rest.", delay: 6 },
@@ -40,10 +40,10 @@ export function Onboarding({ onComplete }: OnboardingProps) {
         ))}
       </div>
       <Button
-        variant="ghost"
         onClick={onComplete}
-        className="mt-8 text-muted-foreground hover:text-foreground px-0 hover:bg-transparent"
+        className="mt-8 bg-foreground text-background hover:bg-foreground/90 transition-colors"
       >
+        Continue
         <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={2} />
       </Button>
     </div>
