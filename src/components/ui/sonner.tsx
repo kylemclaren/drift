@@ -5,6 +5,7 @@ import { CheckmarkCircle02Icon, InformationCircleIcon, Alert02Icon, Multiplicati
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
+      position="top-right"
       theme="system"
       className="toaster group"
       icons={{
@@ -35,6 +36,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: "cn-toast",
+        },
+        style: {
+          textAlign: "center",
+          width: "fit-content",
+          minWidth: "auto",
         },
       }}
       {...props}

@@ -92,7 +92,6 @@ export function ThoughtItem({
   const { ref: swipeRef, handlers: swipeHandlers } = useSwipe({
     onSwipeLeft: () => {
       onDelete(thought.id);
-      toast.success("Thought deleted");
     },
   });
 
@@ -217,7 +216,6 @@ export function ThoughtItem({
         <ContextMenuItem
           onClick={() => {
             onDelete(thought.id)
-            toast.success("Thought deleted")
           }}
           variant="destructive"
         >

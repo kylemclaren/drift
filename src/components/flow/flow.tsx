@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { FlowHeader } from "./flow-header";
 import { ThoughtInput } from "./thought-input";
 import { ThoughtItem } from "./thought-item";
@@ -7,6 +8,8 @@ import { Onboarding } from "./onboarding";
 import { useFlowStore } from "./use-flow-store";
 import { Separator } from "@/components/ui/separator";
 import { downloadThoughts } from "@/lib/export-utils";
+import { isDeleteConfirmationRequired } from "@/lib/env";
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { MoreVerticalIcon } from "@hugeicons/core-free-icons";
 import {
@@ -17,6 +20,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Flow() {
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean
+    thoughtId?: string
+  }>({ isOpen: false })
+  const [clearConfirmation, setClearConfirmation] = useState(false)
+  const requiresConfirmation = isDeleteConfirmationRequired()
+
   const {
     thoughts,
     isOnboarding,
@@ -56,6 +66,42 @@ export function Flow() {
 
   // Sort dates in descending order (newest first)
   const sortedDates = Object.keys(groupedThoughts).sort().reverse();
+
+  // Delete handlers
+  const handleDeleteThought = useCallback(
+    (id: string) => {
+      if (requiresConfirmation) {
+        setDeleteConfirmation({ isOpen: true, thoughtId: id })
+      } else {
+        deleteThought(id)
+        toast.success("Thought deleted")
+      }
+    },
+    [requiresConfirmation, deleteThought]
+  )
+
+  const confirmDeleteThought = useCallback(() => {
+    if (deleteConfirmation.thoughtId) {
+      deleteThought(deleteConfirmation.thoughtId)
+      setDeleteConfirmation({ isOpen: false })
+      toast.success("Thought deleted")
+    }
+  }, [deleteConfirmation.thoughtId, deleteThought])
+
+  const handleClearThoughts = useCallback(() => {
+    if (requiresConfirmation) {
+      setClearConfirmation(true)
+    } else {
+      clearThoughts()
+      toast.success("All thoughts cleared")
+    }
+  }, [requiresConfirmation, clearThoughts])
+
+  const confirmClearThoughts = useCallback(() => {
+    clearThoughts()
+    setClearConfirmation(false)
+    toast.success("All thoughts cleared")
+  }, [clearThoughts])
 
   // Download handlers
   const handleDownloadAll = useCallback(() => {
@@ -116,7 +162,7 @@ export function Flow() {
       <FlowHeader
         onToggleTheme={toggleTheme}
         onToggleSearch={toggleSearch}
-        onClearThoughts={clearThoughts}
+        onClearThoughts={handleClearThoughts}
         onDownloadAll={handleDownloadAll}
       />
 
@@ -178,7 +224,7 @@ export function Flow() {
                             key={thought.id}
                             thought={thought}
                             onUpdate={updateThought}
-                            onDelete={deleteThought}
+                            onDelete={handleDeleteThought}
                             isHighlighted={thought.id === highlightedThoughtId}
                             searchQuery={searchQuery}
                           />
@@ -203,6 +249,31 @@ export function Flow() {
         currentIndex={currentSearchIndex}
         totalResults={searchResults.length}
       />
+
+      {requiresConfirmation && (
+        <>
+          <ConfirmationDialog
+            isOpen={deleteConfirmation.isOpen}
+            title="Delete Thought?"
+            description="This thought will be permanently deleted. This action cannot be undone."
+            actionLabel="Delete"
+            cancelLabel="Cancel"
+            variant="destructive"
+            onConfirm={confirmDeleteThought}
+            onCancel={() => setDeleteConfirmation({ isOpen: false })}
+          />
+          <ConfirmationDialog
+            isOpen={clearConfirmation}
+            title="Clear All Thoughts?"
+            description="All thoughts will be permanently deleted. This action cannot be undone."
+            actionLabel="Clear All"
+            cancelLabel="Cancel"
+            variant="destructive"
+            onConfirm={confirmClearThoughts}
+            onCancel={() => setClearConfirmation(false)}
+          />
+        </>
+      )}
     </div>
   );
 }

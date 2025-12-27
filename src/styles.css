@@ -151,3 +151,8 @@
 @utility animate-shine {
   animation: shine 5s linear infinite;
 }
+
+/* Sonner toast styling */
+.cn-toast {
+  @apply flex justify-center;
+}
