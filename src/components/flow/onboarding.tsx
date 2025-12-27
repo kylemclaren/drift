@@ -13,6 +13,7 @@ const onboardingMessages = [
   { content: "Thoughts will fade into the background to make space for new ones.", delay: 4 },
   { content: "Feel free to alter your thoughts within 5 minutes, after which you can leave them to rest.", delay: 6 },
   { content: "Don't worry. You can always come back to read your thought process.", delay: 8 },
+  { content: "All your thoughts are stored locally in your browser. They never touch a server and remain completely private.", delay: 10 },
 ];
 
 export function Onboarding({ onComplete }: OnboardingProps) {
