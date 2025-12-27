@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { GithubIcon, Menu02Icon } from "@hugeicons/core-free-icons";
+import { GithubIcon, Menu02Icon, Download02Icon } from "@hugeicons/core-free-icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +13,14 @@ interface FlowHeaderProps {
   onToggleTheme: () => void;
   onToggleSearch: () => void;
   onClearThoughts: () => void;
+  onDownloadAll: () => void;
 }
 
 export function FlowHeader({
   onToggleTheme,
   onToggleSearch,
   onClearThoughts,
+  onDownloadAll,
 }: FlowHeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-end p-4 sm:p-6">
@@ -40,6 +42,11 @@ export function FlowHeader({
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onClearThoughts}>
             Clear Thoughts
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={onDownloadAll}>
+            <HugeiconsIcon icon={Download02Icon} size={16} strokeWidth={2} />
+            Download All
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
