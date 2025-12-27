@@ -4,6 +4,7 @@ import {
   generateThoughtId,
   getThoughtsCollection,
 } from '@/lib/thoughts-collection'
+import { applyTheme, getThemeName } from '@/lib/themes'
 
 const ONBOARDING_KEY = 'flow-onboarding-complete'
 const THEME_KEY = 'flow-theme'
@@ -54,12 +55,21 @@ export function useFlowStore() {
     if (savedTheme) {
       setTheme(savedTheme)
     }
+
+    // Initialize theme colors
+    const themeName = getThemeName()
+    const initialTheme = savedTheme || 'dark'
+    applyTheme(themeName, initialTheme as 'light' | 'dark')
   }, [])
 
   // Apply theme to document
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
     localStorage.setItem(THEME_KEY, theme)
+
+    // Apply color theme
+    const themeName = getThemeName()
+    applyTheme(themeName, theme)
   }, [theme])
 
   const addThought = useCallback((content: string) => {

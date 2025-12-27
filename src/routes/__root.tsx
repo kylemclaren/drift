@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Toaster } from '@/components/ui/sonner'
+import { applyTheme, getThemeName } from '@/lib/themes'
 
 import appCss from '../styles.css?url'
 
@@ -40,6 +42,13 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const themeName = getThemeName()
+    const savedTheme = localStorage.getItem('flow-theme') as 'light' | 'dark' | null
+    const mode = savedTheme || 'dark'
+    applyTheme(themeName, mode)
+  }, [])
+
   return (
     <html lang="en">
       <head>
