@@ -58,8 +58,10 @@ export function Flow() {
   const groupedThoughts = thoughts.reduce(
     (acc, thought) => {
       const date = new Date(thought.createdAt);
-      date.setHours(0, 0, 0, 0);
-      const dateKey = date.toISOString().split('T')[0];
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateKey = `${year}-${month}-${day}`;
 
       if (!acc[dateKey]) {
         acc[dateKey] = [];
@@ -95,10 +97,14 @@ export function Flow() {
               <ThoughtInput onSubmit={addThought} />
               <div className="mt-8 space-y-8">
                 {sortedDates.map((dateKey) => {
-                  const date = new Date(dateKey);
                   const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const isToday = date.getTime() === today.getTime();
+                  const todayYear = today.getFullYear();
+                  const todayMonth = String(today.getMonth() + 1).padStart(2, '0');
+                  const todayDay = String(today.getDate()).padStart(2, '0');
+                  const todayKey = `${todayYear}-${todayMonth}-${todayDay}`;
+                  const isToday = dateKey === todayKey;
+
+                  const date = new Date(dateKey);
 
                   const dateLabel = isToday
                     ? 'Today'
