@@ -14,6 +14,8 @@ interface FlowHeaderProps {
   onToggleSearch: () => void;
   onClearThoughts: () => void;
   onDownloadAll: () => void;
+  onResetOnboarding: () => void;
+  thoughtsCount: number;
 }
 
 export function FlowHeader({
@@ -21,6 +23,8 @@ export function FlowHeader({
   onToggleSearch,
   onClearThoughts,
   onDownloadAll,
+  onResetOnboarding,
+  thoughtsCount,
 }: FlowHeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-end p-4 sm:p-6">
@@ -43,6 +47,14 @@ export function FlowHeader({
           <DropdownMenuItem onClick={onClearThoughts}>
             Clear Thoughts
           </DropdownMenuItem>
+          {thoughtsCount === 0 && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onResetOnboarding}>
+                Reset Onboarding
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onDownloadAll}>
             <HugeiconsIcon icon={Download02Icon} size={16} strokeWidth={2} />

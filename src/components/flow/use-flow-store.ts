@@ -104,6 +104,11 @@ export function useFlowStore() {
     localStorage.setItem(ONBOARDING_KEY, "true");
   }, []);
 
+  const resetOnboarding = useCallback(() => {
+    setIsOnboarding(true)
+    localStorage.removeItem(ONBOARDING_KEY)
+  }, []);
+
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, []);
@@ -152,6 +157,7 @@ export function useFlowStore() {
     deleteThought,
     clearThoughts,
     completeOnboarding,
+    resetOnboarding,
     toggleTheme,
     toggleBlur,
     toggleSearch,

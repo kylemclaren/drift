@@ -25,6 +25,7 @@ export function Flow() {
     thoughtId?: string
   }>({ isOpen: false })
   const [clearConfirmation, setClearConfirmation] = useState(false)
+  const [resetOnboardingConfirmation, setResetOnboardingConfirmation] = useState(false)
   const requiresConfirmation = isDeleteConfirmationRequired()
 
   const {
@@ -39,6 +40,7 @@ export function Flow() {
     deleteThought,
     clearThoughts,
     completeOnboarding,
+    resetOnboarding,
     toggleTheme,
     toggleSearch,
     setSearchQuery,
@@ -103,6 +105,21 @@ export function Flow() {
     toast.success("All thoughts cleared")
   }, [clearThoughts])
 
+  const handleResetOnboarding = useCallback(() => {
+    if (requiresConfirmation) {
+      setResetOnboardingConfirmation(true)
+    } else {
+      resetOnboarding()
+      toast.success("Onboarding reset")
+    }
+  }, [requiresConfirmation, resetOnboarding])
+
+  const confirmResetOnboarding = useCallback(() => {
+    resetOnboarding()
+    setResetOnboardingConfirmation(false)
+    toast.success("Onboarding reset")
+  }, [resetOnboarding])
+
   // Download handlers
   const handleDownloadAll = useCallback(() => {
     const today = new Date();
@@ -164,6 +181,8 @@ export function Flow() {
         onToggleSearch={toggleSearch}
         onClearThoughts={handleClearThoughts}
         onDownloadAll={handleDownloadAll}
+        onResetOnboarding={handleResetOnboarding}
+        thoughtsCount={thoughts.length}
       />
 
       <main className="pt-24 sm:pt-32 pb-24 px-4 sm:px-6">
@@ -271,6 +290,16 @@ export function Flow() {
             variant="destructive"
             onConfirm={confirmClearThoughts}
             onCancel={() => setClearConfirmation(false)}
+          />
+          <ConfirmationDialog
+            isOpen={resetOnboardingConfirmation}
+            title="Reset Onboarding?"
+            description="This will restart the onboarding tutorial. You can complete it again to hide this message."
+            actionLabel="Reset"
+            cancelLabel="Cancel"
+            variant="default"
+            onConfirm={confirmResetOnboarding}
+            onCancel={() => setResetOnboardingConfirmation(false)}
           />
         </>
       )}
