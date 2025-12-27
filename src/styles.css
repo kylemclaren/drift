@@ -122,10 +122,21 @@
     }
   body {
     @apply font-sans bg-background text-foreground;
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior-y: contain;
     }
   html {
     @apply font-sans;
+    /* Enable safe area insets */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
+  /* Improve touch targets on mobile */
+  @media (pointer: coarse) {
+    button, [role="button"], a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
 }
 
 @keyframes shine {

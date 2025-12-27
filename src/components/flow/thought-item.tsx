@@ -1,13 +1,14 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-} from "@/components/ui/context-menu";
-import { Kbd } from "@/components/ui/kbd";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Thought } from "./types";
+import { useSwipe } from "@/hooks/use-swipe";
+import { Kbd } from "@/components/ui/kbd";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 interface ThoughtItemProps {
   thought: Thought;
@@ -80,11 +81,20 @@ export function ThoughtItem({
 }: ThoughtItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
   const [value, setValue] = useState(thought.content);
   const [relativeTime, setRelativeTime] = useState(getRelativeTime(thought.createdAt));
   const [blurAmount, setBlurAmount] = useState(getBlurAmount(thought.createdAt));
   const [opacity, setOpacity] = useState(getOpacity(thought.createdAt));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Swipe to delete on mobile
+  const { ref: swipeRef, handlers: swipeHandlers } = useSwipe({
+    onSwipeLeft: () => {
+      onDelete(thought.id);
+      toast.success("Thought deleted");
+    },
+  });
 
   // Update relative time and blur every second
   useEffect(() => {
@@ -133,7 +143,7 @@ export function ThoughtItem({
     return Date.now() - thought.createdAt < fiveMinutes;
   }, [thought.createdAt]);
 
-  const showClear = isHovered || isEditing || isHighlighted;
+  const showClear = isHovered || isEditing || isHighlighted || isContextMenuOpen;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(thought.content);
@@ -141,9 +151,10 @@ export function ThoughtItem({
   };
 
   return (
-    <ContextMenu>
+    <ContextMenu onOpenChange={setIsContextMenuOpen}>
       <ContextMenuTrigger asChild>
         <div
+          ref={swipeRef}
           className="group py-2"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -151,6 +162,7 @@ export function ThoughtItem({
             opacity: showClear ? 1 : opacity,
             transition: showClear ? 'opacity 0s' : 'opacity 1s ease-out',
           }}
+          {...swipeHandlers}
         >
           {searchQuery && !isEditing && (
             <div

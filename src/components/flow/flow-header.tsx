@@ -21,7 +21,7 @@ export function FlowHeader({
   onClearThoughts,
 }: FlowHeaderProps) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-end p-6">
+    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-end p-4 sm:p-6">
       <DropdownMenu>
         <DropdownMenuTrigger
           className="focus-visible:border-ring focus-visible:ring-ring/50 rounded-md text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 size-9 inline-flex items-center justify-center outline-none focus-visible:ring-[3px]"
