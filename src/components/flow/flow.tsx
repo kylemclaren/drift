@@ -54,19 +54,24 @@ export function Flow() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [toggleTheme, toggleSearch]);
 
-  // Get today's date for header
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-
   // Group thoughts by date
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const todayThoughts = thoughts.filter(
-    (t) => t.createdAt >= todayStart.getTime()
+  const groupedThoughts = thoughts.reduce(
+    (acc, thought) => {
+      const date = new Date(thought.createdAt);
+      date.setHours(0, 0, 0, 0);
+      const dateKey = date.toISOString().split('T')[0];
+
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(thought);
+      return acc;
+    },
+    {} as Record<string, typeof thoughts>
   );
+
+  // Sort dates in descending order (newest first)
+  const sortedDates = Object.keys(groupedThoughts).sort().reverse();
 
   const highlightedThoughtId =
     searchQuery && searchResults.length > 0
@@ -81,27 +86,48 @@ export function Flow() {
         onClearThoughts={clearThoughts}
       />
 
-      <main className="pt-32 pb-24 px-6">
+      <main className="pt-24 sm:pt-32 pb-24 px-4 sm:px-6">
         <div className="w-full max-w-2xl mx-auto">
           {isOnboarding ? (
             <Onboarding onComplete={completeOnboarding} />
           ) : (
             <>
-              <h2 className="text-2xl font-semibold text-foreground mb-4">
-                Today
-              </h2>
               <ThoughtInput onSubmit={addThought} />
-              <div className="mt-6 space-y-2">
-                {todayThoughts.map((thought) => (
-                  <ThoughtItem
-                    key={thought.id}
-                    thought={thought}
-                    onUpdate={updateThought}
-                    onDelete={deleteThought}
-                    isHighlighted={thought.id === highlightedThoughtId}
-                    searchQuery={searchQuery}
-                  />
-                ))}
+              <div className="mt-8 space-y-8">
+                {sortedDates.map((dateKey) => {
+                  const date = new Date(dateKey);
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const isToday = date.getTime() === today.getTime();
+
+                  const dateLabel = isToday
+                    ? 'Today'
+                    : date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                      });
+
+                  return (
+                    <div key={dateKey}>
+                      <h2 className="text-2xl font-semibold text-foreground mb-4">
+                        {dateLabel}
+                      </h2>
+                      <div className="space-y-2">
+                        {groupedThoughts[dateKey].map((thought) => (
+                          <ThoughtItem
+                            key={thought.id}
+                            thought={thought}
+                            onUpdate={updateThought}
+                            onDelete={deleteThought}
+                            isHighlighted={thought.id === highlightedThoughtId}
+                            searchQuery={searchQuery}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </>
           )}
