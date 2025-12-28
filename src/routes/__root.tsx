@@ -118,6 +118,15 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 })
 
+// Blocking script to prevent theme flash - runs before any content renders
+const themeScript = `
+(function() {
+  var mode = localStorage.getItem('flow-theme') || 'dark';
+  document.documentElement.classList.add(mode);
+  document.documentElement.style.colorScheme = mode;
+})();
+`
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const themeName = getThemeName()
@@ -136,6 +145,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <HeadContent />
       </head>
       <body>

@@ -11,13 +11,17 @@ const THEME_KEY = 'flow-theme'
 
 export function useFlowStore() {
   const [thoughts, setThoughts] = useState<Array<Thought>>([])
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isThoughtsLoaded, setIsThoughtsLoaded] = useState(false)
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(false)
   const [isOnboarding, setIsOnboarding] = useState(true)
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [isBlurred, setIsBlurred] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0)
+
+  // Combined loaded state - ready when both thoughts and prefs are loaded
+  const isLoaded = isThoughtsLoaded && isPrefsLoaded
 
   // Subscribe to thoughts collection on client only
   useEffect(() => {
@@ -33,7 +37,7 @@ export function useFlowStore() {
     const subscription = collection.subscribeChanges(
       () => {
         setThoughts(getSortedThoughts())
-        setIsLoaded(true)
+        setIsThoughtsLoaded(true)
       },
       { includeInitialState: true }
     )
@@ -59,7 +63,9 @@ export function useFlowStore() {
     // Initialize theme colors
     const themeName = getThemeName()
     const initialTheme = savedTheme || 'dark'
-    applyTheme(themeName, initialTheme as 'light' | 'dark')
+    applyTheme(themeName, initialTheme)
+
+    setIsPrefsLoaded(true)
   }, [])
 
   // Apply theme to document
@@ -145,6 +151,7 @@ export function useFlowStore() {
 
   return {
     thoughts,
+    isLoaded,
     isOnboarding,
     theme,
     isBlurred,

@@ -30,6 +30,7 @@ export function Flow() {
 
   const {
     thoughts,
+    isLoaded,
     isOnboarding,
     isSearchOpen,
     searchQuery,
@@ -173,6 +174,27 @@ export function Flow() {
     searchQuery && searchResults.length > 0
       ? searchResults[currentSearchIndex]?.id
       : null;
+
+  // Show minimal loading state while data loads
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="pt-24 sm:pt-32 pb-24 px-4 sm:px-6">
+          <div className="w-full max-w-2xl mx-auto">
+            <div className="space-y-4 animate-pulse">
+              <div className="h-24 bg-muted/50 rounded-lg" />
+              <div className="h-8 bg-muted/30 rounded w-24" />
+              <div className="space-y-2">
+                <div className="h-16 bg-muted/30 rounded-lg" />
+                <div className="h-16 bg-muted/30 rounded-lg" />
+                <div className="h-16 bg-muted/30 rounded-lg" />
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
