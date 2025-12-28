@@ -9,7 +9,7 @@ import appCss from '../styles.css?url'
 
 function getThemeColor(): string {
   const themeName = getThemeName()
-  const savedTheme = localStorage.getItem('flow-theme') as 'light' | 'dark' | null
+  const savedTheme = typeof window !== 'undefined' ? localStorage.getItem('flow-theme') as 'light' | 'dark' | null : null
   const mode = savedTheme || 'dark'
   const themeColors = themes[themeName][mode]
   const bgColor = themeColors.background
